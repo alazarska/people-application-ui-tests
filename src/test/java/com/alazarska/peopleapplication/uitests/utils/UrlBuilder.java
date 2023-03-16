@@ -13,4 +13,12 @@ public class UrlBuilder {
     public static String buildPersonUpdatePageUrl(String personId) {
         return TestConfiguration.applicationUrl + "/people/" + personId + "/update";
     }
+
+    public static String buildPersonImageUrl(String personId, String fileExtension) {
+        return TestConfiguration.applicationUrl + "/people/images/" + personId + "." + fileExtension;
+    }
+
+    public static String buildPersonImageUrlToDefaultAvatar() {
+        return TestConfiguration.applicationUrl + "/people/images/default-avatar.jpg";
+    }
 }

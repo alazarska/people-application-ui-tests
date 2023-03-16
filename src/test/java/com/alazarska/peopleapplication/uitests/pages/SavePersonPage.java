@@ -1,7 +1,7 @@
 package com.alazarska.peopleapplication.uitests.pages;
 
+import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
 import com.alazarska.peopleapplication.uitests.utils.TestConfiguration;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class SavePersonPage {
 
-    private WebDriver driver;
+    private final WebDriver driver;
 
     public SavePersonPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
@@ -31,7 +31,7 @@ public class SavePersonPage {
     private WebElement emailInput;
 
     @FindBy(id = "dob")
-    private WebElement dobInput;
+    private WebElement dateOfBirthInput;
 
     @FindBy(id = "salary")
     private WebElement salaryInput;
@@ -49,11 +49,11 @@ public class SavePersonPage {
         return savePersonButton;
     }
 
-    public PersonDetailsPage savePerson(String firstName, String lastName, String email, String dob, BigDecimal salary) {
+    public PersonDetailsPage savePerson(String firstName, String lastName, String email, String dateOfBirth, BigDecimal salary) {
         firstNameInput.sendKeys(firstName);
         lastNameInput.sendKeys(lastName);
         emailInput.sendKeys(email);
-        setAttribute(dobInput, "value", dob);
+        SeleniumHelper.setAttribute(dateOfBirthInput, "value", dateOfBirth, driver);
         salaryInput.sendKeys(salary.toString());
         savePersonButton.click();
         return new PersonDetailsPage(driver);
@@ -69,10 +69,5 @@ public class SavePersonPage {
         return validationInfo.stream()
                 .map(WebElement::getText)
                 .collect(Collectors.toList());
-    }
-
-    private void setAttribute(WebElement element, String attName, String attValue) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].setAttribute(arguments[1], arguments[2]);", element, attName, attValue);
     }
 }

@@ -3,6 +3,7 @@ package com.alazarska.peopleapplication.uitests.utils;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -19,7 +20,9 @@ public class DriverFactory {
             return new EdgeDriver();
         } else {
             WebDriverManager.chromedriver().setup();
-            return new ChromeDriver();
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--remote-allow-origins=*");
+            return new ChromeDriver(options);
         }
     }
 }

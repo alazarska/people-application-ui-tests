@@ -1,7 +1,7 @@
 package com.alazarska.peopleapplication.uitests.pages;
 
+import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
 import com.alazarska.peopleapplication.uitests.utils.TestConfiguration;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -33,13 +33,16 @@ public class UpdatePersonPage {
     private WebElement emailInput;
 
     @FindBy(id = "dob")
-    private WebElement dobInput;
+    private WebElement dateOfBirthInput;
 
     @FindBy(id = "salary")
     private WebElement salaryInput;
 
     @FindBy(id = "photoFileName")
     private WebElement photoFileNameInput;
+
+    @FindBy(css = "img[data-selenium-id= 'person-image-form']")
+    private WebElement photoFileName;
 
     @FindBy(css = "button[data-selenium-id= 'save-button']")
     private WebElement savePersonButton;
@@ -60,16 +63,16 @@ public class UpdatePersonPage {
         return lastNameInput;
     }
 
-    public WebElement getDobInput() {
-        return dobInput;
+    public WebElement getDateOfBirthInput() {
+        return dateOfBirthInput;
     }
 
     public WebElement getSalaryInput() {
         return salaryInput;
     }
 
-    public WebElement getPhotoFileNameInput() {
-        return photoFileNameInput;
+    public WebElement getPhotoFileName() {
+        return photoFileName;
     }
 
     public WebElement getEmailInput() {
@@ -88,20 +91,15 @@ public class UpdatePersonPage {
         return this;
     }
 
-    public UpdatePersonPage setEmail(String emai) {
+    public UpdatePersonPage setEmail(String email) {
         emailInput.clear();
-        emailInput.sendKeys(emai);
+        emailInput.sendKeys(email);
         return this;
     }
 
     public UpdatePersonPage setDob(String dob) {
-        setAttribute(dobInput, "value", dob);
+        SeleniumHelper.setAttribute(dateOfBirthInput, "value", dob, driver);
         return this;
-    }
-
-    private void setAttribute(WebElement element, String attName, String attValue) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].setAttribute(arguments[1], arguments[2]);", element, attName, attValue);
     }
 
     public UpdatePersonPage setSalary(String salary) {
@@ -122,20 +120,15 @@ public class UpdatePersonPage {
                 .collect(Collectors.toList());
     }
 
-    public PersonDetailsPage saveUpdatedDataValid() {
-        scrollToElement(savePersonButton);
+    public PersonDetailsPage saveUpdateFormWithValidData() {
+        SeleniumHelper.scrollToElement(savePersonButton, driver);
         savePersonButton.click();
         return new PersonDetailsPage(driver);
     }
 
-    public UpdatePersonPage saveUpdatedDataInvalid() {
-        scrollToElement(savePersonButton);
+    public UpdatePersonPage saveUpdateFormWithInvalidData() {
+        SeleniumHelper.scrollToElement(savePersonButton, driver);
         savePersonButton.click();
         return this;
-    }
-
-    private void scrollToElement(WebElement element) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollTo({ top: arguments[0].getBoundingClientRect().y, left:0, behavior: \"instant\"});", element);
     }
 }

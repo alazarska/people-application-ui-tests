@@ -1,6 +1,5 @@
 package com.alazarska.peopleapplication.uitests.pages;
 
-import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -8,7 +7,7 @@ import org.openqa.selenium.support.PageFactory;
 
 public class PersonDetailsPage {
 
-    private WebDriver driver;
+    private final WebDriver driver;
 
     public PersonDetailsPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
@@ -28,7 +27,7 @@ public class PersonDetailsPage {
     private WebElement personEmail;
 
     @FindBy(css = "td[data-selenium-id = 'dob']")
-    private WebElement personDob;
+    private WebElement personDateOfBirth;
 
     @FindBy(css = "td[data-selenium-id = 'salary']")
     private WebElement personSalary;
@@ -61,8 +60,8 @@ public class PersonDetailsPage {
         return personEmail;
     }
 
-    public WebElement getPersonDob() {
-        return personDob;
+    public WebElement getPersonDateOfBirth() {
+        return personDateOfBirth;
     }
 
     public WebElement getPersonSalary() {
@@ -70,7 +69,6 @@ public class PersonDetailsPage {
     }
 
     public String getPersonNameHeader() {
-        SeleniumHelper.waitForElementToBeVisible(personNameHeader, driver);
         return personNameHeader.getText();
     }
 

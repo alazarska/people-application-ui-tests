@@ -1,9 +1,9 @@
 package com.alazarska.peopleapplication.uitests.tests;
 
-import com.alazarska.peopleapplication.uitests.pages.ErrorPage;
 import com.alazarska.peopleapplication.uitests.pages.PeopleListPage;
 import com.alazarska.peopleapplication.uitests.pages.PersonDetailsPage;
 import com.alazarska.peopleapplication.uitests.pages.UpdatePersonPage;
+import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
 import com.alazarska.peopleapplication.uitests.utils.UrlBuilder;
 import org.testng.annotations.Test;
 
@@ -53,8 +53,9 @@ public class PeopleListTest extends BaseTest {
 
         String personId = personDetailsPage.getPersonId();
 
-        personDetailsPage.getPeopleListPage().deleteSelectedPerson(personId);
-        driver.get(UrlBuilder.buildPersonDetailsPageUrl(personId));
-        assertThat(new ErrorPage(driver).getErrorInformation().getText()).isEqualTo("Person not found");
+        PeopleListPage peopleListPage = personDetailsPage.getPeopleListPage().deleteSelectedPerson(personId);
+
+        assertThat(peopleListPage.getDeleteAlert().getText()).isEqualTo("Selected person has been removed from database.");
+        SeleniumHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(UrlBuilder.buildPersonDetailsPageUrl(personId), driver);
     }
 }
