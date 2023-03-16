@@ -3,8 +3,8 @@ package com.alazarska.peopleapplication.uitests.tests;
 import com.alazarska.peopleapplication.uitests.pages.PeopleListPage;
 import com.alazarska.peopleapplication.uitests.pages.PersonDetailsPage;
 import com.alazarska.peopleapplication.uitests.pages.SavePersonPage;
+import com.alazarska.peopleapplication.uitests.utils.TestAssertionsHelper;
 import com.alazarska.peopleapplication.uitests.utils.UrlBuilder;
-import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
@@ -20,16 +20,15 @@ public class SavePersonTest extends BaseTest {
                 .getSavePersonPage()
                 .savePerson("Tom", "Smith", "smith@test.com", "1950-02-25", new BigDecimal(11000));
 
-        SoftAssertions softAssertions = new SoftAssertions();
-        softAssertions.assertThat(personDetailsPage.getPersonNameHeader()).isEqualTo("Tom Smith");
-        softAssertions.assertThat(personDetailsPage.getPersonFirstName().getText()).isEqualTo("Tom");
-        softAssertions.assertThat(personDetailsPage.getPersonLastName().getText()).isEqualTo("Smith");
-        softAssertions.assertThat(personDetailsPage.getPersonEmail().getText()).isEqualTo("smith@test.com");
-        softAssertions.assertThat(personDetailsPage.getPersonDateOfBirth().getText()).isEqualTo("February 25, 1950");
-        softAssertions.assertThat(personDetailsPage.getPersonSalary().getText()).contains("11,000.00");
-        softAssertions.assertThat(personDetailsPage.getPersonPhoto().getAttribute("src")).isEqualTo(
-                UrlBuilder.buildPersonImageUrlToDefaultAvatar());
-        softAssertions.assertAll();
+        TestAssertionsHelper.assertExpectedDataOnPersonDetailsPage(
+                personDetailsPage,
+                "Tom",
+                "Smith",
+                "smith@test.com",
+                "February 25, 1950",
+                "11,000.00",
+                UrlBuilder.buildPersonImageUrlToDefaultAvatar()
+        );
     }
 
     @Test
@@ -41,16 +40,15 @@ public class SavePersonTest extends BaseTest {
         PersonDetailsPage personDetailsPage = savePersonPage
                 .savePerson("Ann", "New", "new@test.com", "1970-10-10", new BigDecimal(11000));
 
-        SoftAssertions softAssertions = new SoftAssertions();
-        softAssertions.assertThat(personDetailsPage.getPersonNameHeader()).isEqualTo("Ann New");
-        softAssertions.assertThat(personDetailsPage.getPersonFirstName().getText()).isEqualTo("Ann");
-        softAssertions.assertThat(personDetailsPage.getPersonLastName().getText()).isEqualTo("New");
-        softAssertions.assertThat(personDetailsPage.getPersonEmail().getText()).isEqualTo("new@test.com");
-        softAssertions.assertThat(personDetailsPage.getPersonDateOfBirth().getText()).isEqualTo("October 10, 1970");
-        softAssertions.assertThat(personDetailsPage.getPersonSalary().getText()).contains("11,000.00");
-        softAssertions.assertThat(personDetailsPage.getPersonPhoto().getAttribute("src")).isEqualTo(
-                UrlBuilder.buildPersonImageUrl(personDetailsPage.getPersonId(), "JPG"));
-        softAssertions.assertAll();
+        TestAssertionsHelper.assertExpectedDataOnPersonDetailsPage(
+                personDetailsPage,
+                "Ann",
+                "New",
+                "new@test.com",
+                "October 10, 1970",
+                "11,000.00",
+                UrlBuilder.buildPersonImageUrlWithId(personDetailsPage.getPersonId(), "JPG")
+        );
     }
 
     @Test

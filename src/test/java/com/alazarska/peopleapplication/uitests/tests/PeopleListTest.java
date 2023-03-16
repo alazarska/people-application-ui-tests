@@ -3,7 +3,7 @@ package com.alazarska.peopleapplication.uitests.tests;
 import com.alazarska.peopleapplication.uitests.pages.PeopleListPage;
 import com.alazarska.peopleapplication.uitests.pages.PersonDetailsPage;
 import com.alazarska.peopleapplication.uitests.pages.UpdatePersonPage;
-import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
+import com.alazarska.peopleapplication.uitests.utils.TestAssertionsHelper;
 import com.alazarska.peopleapplication.uitests.utils.UrlBuilder;
 import org.testng.annotations.Test;
 
@@ -56,6 +56,6 @@ public class PeopleListTest extends BaseTest {
         PeopleListPage peopleListPage = personDetailsPage.getPeopleListPage().deleteSelectedPerson(personId);
 
         assertThat(peopleListPage.getDeleteAlert().getText()).isEqualTo("Selected person has been removed from database.");
-        SeleniumHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(UrlBuilder.buildPersonDetailsPageUrl(personId), driver);
+        TestAssertionsHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(UrlBuilder.buildPersonDetailsPageUrl(personId), driver);
     }
 }

@@ -3,7 +3,7 @@ package com.alazarska.peopleapplication.uitests.tests;
 import com.alazarska.peopleapplication.uitests.pages.PeopleListPage;
 import com.alazarska.peopleapplication.uitests.pages.PersonDetailsPage;
 import com.alazarska.peopleapplication.uitests.pages.UpdatePersonPage;
-import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
+import com.alazarska.peopleapplication.uitests.utils.TestAssertionsHelper;
 import com.alazarska.peopleapplication.uitests.utils.UrlBuilder;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
@@ -30,7 +30,7 @@ public class UpdatePersonTest extends BaseTest {
         softAssertions.assertThat(updatePersonPage.getEmailInput().getAttribute("value")).isEqualTo("test@test.com");
         softAssertions.assertThat(updatePersonPage.getDateOfBirthInput().getAttribute("value")).isEqualTo("1990-07-17");
         softAssertions.assertThat(updatePersonPage.getSalaryInput().getAttribute("value")).isEqualTo("70000.00");
-        softAssertions.assertThat(updatePersonPage.getPhotoFileName().getAttribute("src")).isEqualTo(UrlBuilder.buildPersonImageUrlToDefaultAvatar());
+        softAssertions.assertThat(updatePersonPage.getAvatarImage().getAttribute("src")).isEqualTo(UrlBuilder.buildPersonImageUrlToDefaultAvatar());
         softAssertions.assertAll();
     }
 
@@ -48,15 +48,15 @@ public class UpdatePersonTest extends BaseTest {
                 .setPhotoFileName("tomnew.jpg")
                 .saveUpdateFormWithValidData();
 
-        SoftAssertions softAssertions = new SoftAssertions();
-        softAssertions.assertThat(personDetailsPage.getPersonFirstName().getText()).isEqualTo("Thomas");
-        softAssertions.assertThat(personDetailsPage.getPersonLastName().getText()).isEqualTo("Newman");
-        softAssertions.assertThat(personDetailsPage.getPersonEmail().getText()).isEqualTo("thomas.newman@test.com");
-        softAssertions.assertThat(personDetailsPage.getPersonDateOfBirth().getText()).isEqualTo("October 20, 1970");
-        softAssertions.assertThat(personDetailsPage.getPersonSalary().getText()).contains("900,000.00");
-        softAssertions.assertThat(personDetailsPage.getPersonPhoto().getAttribute("src")).isEqualTo(
-                UrlBuilder.buildPersonImageUrl(personDetailsPage.getPersonId(), "jpg"));
-        softAssertions.assertAll();
+        TestAssertionsHelper.assertExpectedDataOnPersonDetailsPage(
+                personDetailsPage,
+                "Thomas",
+                "Newman",
+                "thomas.newman@test.com",
+                "October 20, 1970",
+                "900,000.00",
+                UrlBuilder.buildPersonImageUrlWithId(personDetailsPage.getPersonId(), "jpg")
+        );
     }
 
     @Test
@@ -122,12 +122,12 @@ public class UpdatePersonTest extends BaseTest {
     @Test
     public void shouldNavigateToNotFoundPersonPageWhenPersonWithGivenIdNotExist() {
         String url = UrlBuilder.buildPersonUpdatePageUrl("0");
-        SeleniumHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(url, driver);
+        TestAssertionsHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(url, driver);
     }
 
     @Test
     public void shouldNavigateToErrorPageWhenIdInUrlIsNotNumber() {
         String url = UrlBuilder.buildPersonUpdatePageUrl("aa");
-        SeleniumHelper.checkIfInvalidUrlNavigateToErrorPage(url, driver);
+        TestAssertionsHelper.checkIfInvalidUrlNavigateToErrorPage(url, driver);
     }
 }

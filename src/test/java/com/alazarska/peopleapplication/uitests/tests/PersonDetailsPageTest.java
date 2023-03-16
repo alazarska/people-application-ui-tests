@@ -3,7 +3,7 @@ package com.alazarska.peopleapplication.uitests.tests;
 import com.alazarska.peopleapplication.uitests.pages.PeopleListPage;
 import com.alazarska.peopleapplication.uitests.pages.PersonDetailsPage;
 import com.alazarska.peopleapplication.uitests.pages.UpdatePersonPage;
-import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
+import com.alazarska.peopleapplication.uitests.utils.TestAssertionsHelper;
 import com.alazarska.peopleapplication.uitests.utils.UrlBuilder;
 import org.testng.annotations.Test;
 
@@ -46,18 +46,18 @@ public class PersonDetailsPageTest extends BaseTest {
         PeopleListPage peopleListPage = personDetailsPage.deletePerson();
         assertThat(peopleListPage.getDeleteAlert().getText()).isEqualTo("Selected person has been removed from database.");
 
-        SeleniumHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(UrlBuilder.buildPersonDetailsPageUrl(personId), driver);
+        TestAssertionsHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(UrlBuilder.buildPersonDetailsPageUrl(personId), driver);
     }
 
     @Test
     public void shouldNavigateToNotFoundPersonPageWhenPersonWithGivenIdNotExist() {
         String url = UrlBuilder.buildPersonDetailsPageUrl("0");
-        SeleniumHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(url, driver);
+        TestAssertionsHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(url, driver);
     }
 
     @Test
     public void shouldNavigateToErrorPageWhenIdInUrlIsNotNumber() {
         String url = UrlBuilder.buildPersonDetailsPageUrl("aa");
-        SeleniumHelper.checkIfInvalidUrlNavigateToErrorPage(url, driver);
+        TestAssertionsHelper.checkIfInvalidUrlNavigateToErrorPage(url, driver);
     }
 }

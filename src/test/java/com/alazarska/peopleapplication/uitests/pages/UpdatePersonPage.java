@@ -42,7 +42,7 @@ public class UpdatePersonPage {
     private WebElement photoFileNameInput;
 
     @FindBy(css = "img[data-selenium-id= 'person-image-form']")
-    private WebElement photoFileName;
+    private WebElement avatarImage;
 
     @FindBy(css = "button[data-selenium-id= 'save-button']")
     private WebElement savePersonButton;
@@ -71,8 +71,8 @@ public class UpdatePersonPage {
         return salaryInput;
     }
 
-    public WebElement getPhotoFileName() {
-        return photoFileName;
+    public WebElement getAvatarImage() {
+        return avatarImage;
     }
 
     public WebElement getEmailInput() {

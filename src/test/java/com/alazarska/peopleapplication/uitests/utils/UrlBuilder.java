@@ -14,11 +14,15 @@ public class UrlBuilder {
         return TestConfiguration.applicationUrl + "/people/" + personId + "/update";
     }
 
-    public static String buildPersonImageUrl(String personId, String fileExtension) {
-        return TestConfiguration.applicationUrl + "/people/images/" + personId + "." + fileExtension;
+    public static String buildPersonImageUrlWithId(String personId, String fileExtension) {
+        return buildPersonImageUrl(personId + "." + fileExtension);
     }
 
     public static String buildPersonImageUrlToDefaultAvatar() {
-        return TestConfiguration.applicationUrl + "/people/images/default-avatar.jpg";
+        return buildPersonImageUrl("default-avatar.jpg");
+    }
+
+    private static String buildPersonImageUrl(String fileName) {
+        return TestConfiguration.applicationUrl + "/people/images/" + fileName;
     }
 }
