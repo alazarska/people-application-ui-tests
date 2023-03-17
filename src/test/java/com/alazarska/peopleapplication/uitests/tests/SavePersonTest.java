@@ -3,7 +3,8 @@ package com.alazarska.peopleapplication.uitests.tests;
 import com.alazarska.peopleapplication.uitests.pages.PeopleListPage;
 import com.alazarska.peopleapplication.uitests.pages.PersonDetailsPage;
 import com.alazarska.peopleapplication.uitests.pages.SavePersonPage;
-import com.alazarska.peopleapplication.uitests.utils.TestConfiguration;
+import com.alazarska.peopleapplication.uitests.utils.TestAssertionsHelper;
+import com.alazarska.peopleapplication.uitests.utils.UrlBuilder;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
@@ -19,9 +20,15 @@ public class SavePersonTest extends BaseTest {
                 .getSavePersonPage()
                 .savePerson("Tom", "Smith", "smith@test.com", "1950-02-25", new BigDecimal(11000));
 
-        // TODO: check everything
-        assertThat(personDetailsPage.getPersonNameHeader()).isEqualTo("Tom Smith");
-        assertThat(personDetailsPage.getPersonPhoto().getAttribute("src")).isEqualTo(TestConfiguration.applicationUrl + "/people/images/default-avatar.jpg");
+        TestAssertionsHelper.assertExpectedDataOnPersonDetailsPage(
+                personDetailsPage,
+                "Tom",
+                "Smith",
+                "smith@test.com",
+                "February 25, 1950",
+                "11,000.00",
+                UrlBuilder.buildPersonImageUrlToDefaultAvatar()
+        );
     }
 
     @Test
@@ -30,38 +37,45 @@ public class SavePersonTest extends BaseTest {
                 .getSavePersonPage()
                 .setPhotoFileName("annnew.JPG");
 
-        PersonDetailsPage personDetailsPage = savePersonPage.savePerson("Ann", "New", "new@test.com", "1970-10-10", new BigDecimal(11000));
+        PersonDetailsPage personDetailsPage = savePersonPage
+                .savePerson("Ann", "New", "new@test.com", "1970-10-10", new BigDecimal(11000));
 
-        assertThat(personDetailsPage.getPersonNameHeader()).isEqualTo("Ann New");
-        assertThat(personDetailsPage.getPersonPhoto().getAttribute("src")).isEqualTo(TestConfiguration.applicationUrl + "/people/images/" + personDetailsPage.getPersonId() + ".JPG");
+        TestAssertionsHelper.assertExpectedDataOnPersonDetailsPage(
+                personDetailsPage,
+                "Ann",
+                "New",
+                "new@test.com",
+                "October 10, 1970",
+                "11,000.00",
+                UrlBuilder.buildPersonImageUrlWithId(personDetailsPage.getPersonId(), "JPG")
+        );
     }
 
     @Test
     public void shouldNotAllowToSavePersonWithInvalidData() {
         SavePersonPage savePersonPage = new PeopleListPage(driver)
                 .getSavePersonPage();
-        savePersonPage.getSavePersonButton().click();
 
+        savePersonPage.getSavePersonButton().click();
         List<String> validationInfo = savePersonPage.getValidationInfo();
 
         assertThat(validationInfo).containsExactlyInAnyOrder(
                 "First Name can not be empty",
                 "Last Name can not be empty",
                 "The email address is required",
-                "Dob can not be empty",
+                "Date of birth can not be empty",
                 "Salary can not be empty"
         );
     }
 
     @Test
-    public void shouldNotAllowToSavePersonWithDobInFuture() {
+    public void shouldNotAllowToSavePersonWithDateOfBirthInFuture() {
         SavePersonPage savePersonPage = new PeopleListPage(driver)
                 .getSavePersonPage();
 
-        savePersonPage.savePerson("Anny", "New", "new@test.com", "2050-01-01", new BigDecimal(1100));
-
+        savePersonPage.savePerson("Anny", "New", "new@test.com", "3000-01-01", new BigDecimal(1100));
         List<String> validationInfo = savePersonPage.getValidationInfo();
 
-        assertThat(validationInfo).contains("Dob must be in past");
+        assertThat(validationInfo).contains("Date of birth must be in past");
     }
 }

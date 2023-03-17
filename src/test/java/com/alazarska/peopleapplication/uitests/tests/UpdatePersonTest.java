@@ -3,8 +3,7 @@ package com.alazarska.peopleapplication.uitests.tests;
 import com.alazarska.peopleapplication.uitests.pages.PeopleListPage;
 import com.alazarska.peopleapplication.uitests.pages.PersonDetailsPage;
 import com.alazarska.peopleapplication.uitests.pages.UpdatePersonPage;
-import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
-import com.alazarska.peopleapplication.uitests.utils.TestConfiguration;
+import com.alazarska.peopleapplication.uitests.utils.TestAssertionsHelper;
 import com.alazarska.peopleapplication.uitests.utils.UrlBuilder;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
@@ -16,8 +15,6 @@ import java.util.function.Consumer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UpdatePersonTest extends BaseTest {
-
-    private final SeleniumHelper seleniumHelper = new SeleniumHelper();
 
     @Test
     public void shouldShowUpdatePersonFormWithFilledInputFields() {
@@ -31,8 +28,9 @@ public class UpdatePersonTest extends BaseTest {
         softAssertions.assertThat(updatePersonPage.getFirstNameInput().getAttribute("value")).isEqualTo("Tom");
         softAssertions.assertThat(updatePersonPage.getLastNameInput().getAttribute("value")).isEqualTo("New");
         softAssertions.assertThat(updatePersonPage.getEmailInput().getAttribute("value")).isEqualTo("test@test.com");
-        softAssertions.assertThat(updatePersonPage.getDobInput().getAttribute("value")).isEqualTo("1990-07-17");
+        softAssertions.assertThat(updatePersonPage.getDateOfBirthInput().getAttribute("value")).isEqualTo("1990-07-17");
         softAssertions.assertThat(updatePersonPage.getSalaryInput().getAttribute("value")).isEqualTo("70000.00");
+        softAssertions.assertThat(updatePersonPage.getAvatarImage().getAttribute("src")).isEqualTo(UrlBuilder.buildPersonImageUrlToDefaultAvatar());
         softAssertions.assertAll();
     }
 
@@ -48,26 +46,62 @@ public class UpdatePersonTest extends BaseTest {
                 .setDob("1970-10-20")
                 .setSalary("900000")
                 .setPhotoFileName("tomnew.jpg")
-                .saveUpdatedDataValid();
+                .saveUpdateFormWithValidData();
 
-        SoftAssertions softAssertions = new SoftAssertions();
-        softAssertions.assertThat(personDetailsPage.getPersonFirstName().getText()).isEqualTo("Thomas");
-        softAssertions.assertThat(personDetailsPage.getPersonLastName().getText()).isEqualTo("Newman");
-        softAssertions.assertThat(personDetailsPage.getPersonEmail().getText()).isEqualTo("thomas.newman@test.com");
-        softAssertions.assertThat(personDetailsPage.getPersonDob().getText()).isEqualTo("October 20, 1970");
-        softAssertions.assertThat(personDetailsPage.getPersonSalary().getText()).contains("900,000.00");
-        softAssertions.assertThat(personDetailsPage.getPersonPhoto().getAttribute("src")).contains(
-                TestConfiguration.applicationUrl + "/people/images/" + personDetailsPage.getPersonId() + ".jpg");
-        softAssertions.assertAll();
+        TestAssertionsHelper.assertExpectedDataOnPersonDetailsPage(
+                personDetailsPage,
+                "Thomas",
+                "Newman",
+                "thomas.newman@test.com",
+                "October 20, 1970",
+                "900,000.00",
+                UrlBuilder.buildPersonImageUrlWithId(personDetailsPage.getPersonId(), "jpg")
+        );
     }
 
     @Test
-    public void shouldThrowValidationInformationWhenPersonIsUpdatedWithInvalidData() {
+    public void shouldThrowValidationInformationWhenPersonIsUpdatedWithEmptyData() {
         testValidationInformationWhenPersonIsUpdatedWithInvalidData(
-                updatePersonPage -> updatePersonPage.setFirstName("").setEmail("a"),
+                updatePersonPage -> {
+                    updatePersonPage
+                            .setFirstName("")
+                            .setLastName("")
+                            .setEmail("")
+                            .setDob("")
+                            .setSalary("");
+                },
                 List.of(
                         "First Name can not be empty",
+                        "Last Name can not be empty",
+                        "The email address is required",
+                        "Date of birth can not be empty",
+                        "Salary can not be empty"
+                )
+        );
+    }
+
+    @Test
+    public void shouldThrowValidationInformationWhenPersonIsUpdatedWithInvalidEmail() {
+        testValidationInformationWhenPersonIsUpdatedWithInvalidData(
+                updatePersonPage -> {
+                    updatePersonPage
+                            .setEmail("aa");
+                },
+                List.of(
                         "Email must be valid"
+                )
+        );
+    }
+
+    @Test
+    public void shouldThrowValidationInformationWhenPersonIsUpdatedWithDateOfBirthInFuture() {
+        testValidationInformationWhenPersonIsUpdatedWithInvalidData(
+                updatePersonPage -> {
+                    updatePersonPage
+                            .setDob("3000-01-01");
+                },
+                List.of(
+                        "Date of birth must be in past"
                 )
         );
     }
@@ -79,9 +113,7 @@ public class UpdatePersonTest extends BaseTest {
                 .getUpdatePersonPage();
 
         setFields.accept(updatePersonPage);
-
-        updatePersonPage.saveUpdatedDataInvalid();
-
+        updatePersonPage.saveUpdateFormWithInvalidData();
         List<String> validationInfo = updatePersonPage.getValidationInfo();
 
         assertThat(validationInfo).containsExactlyInAnyOrderElementsOf(expectedValidationErrors);
@@ -90,12 +122,12 @@ public class UpdatePersonTest extends BaseTest {
     @Test
     public void shouldNavigateToNotFoundPersonPageWhenPersonWithGivenIdNotExist() {
         String url = UrlBuilder.buildPersonUpdatePageUrl("0");
-        seleniumHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(url, driver);
+        TestAssertionsHelper.checkIfUrlWithIdWhichNotExistNavigateToNotFoundPersonPage(url, driver);
     }
 
     @Test
     public void shouldNavigateToErrorPageWhenIdInUrlIsNotNumber() {
         String url = UrlBuilder.buildPersonUpdatePageUrl("aa");
-        seleniumHelper.checkIfInvalidUrlNavigateToErrorPage(url, driver);
+        TestAssertionsHelper.checkIfInvalidUrlNavigateToErrorPage(url, driver);
     }
 }

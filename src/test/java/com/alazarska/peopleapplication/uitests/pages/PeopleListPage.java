@@ -1,8 +1,8 @@
 package com.alazarska.peopleapplication.uitests.pages;
 
+import com.alazarska.peopleapplication.uitests.utils.SeleniumHelper;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -32,7 +32,7 @@ public class PeopleListPage {
 
     @SneakyThrows
     public SavePersonPage getSavePersonPage() {
-        scrollToElement(addPersonButton);
+        SeleniumHelper.scrollToElement(addPersonButton, driver);
         addPersonButton.click();
         return new SavePersonPage(driver);
     }
@@ -55,13 +55,8 @@ public class PeopleListPage {
     private void clickRowAction(String id, String buttonSeleniumId) {
         String xpath = "//th[@data-selenium-id='person-id' and .='" + id + "']/parent::*/descendant::*[@data-selenium-id='" + buttonSeleniumId + "']";
         WebElement actionButton = driver.findElement(By.xpath(xpath));
-        scrollToElement(actionButton);
+        SeleniumHelper.scrollToElement(actionButton, driver);
         actionButton.click();
-    }
-
-    private void scrollToElement(WebElement element) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollTo({ top: arguments[0].getBoundingClientRect().y, left:0, behavior: \"instant\"});", element);
     }
 }
 
